@@ -155,6 +155,8 @@ http://192.168.0.148:8001
 - PostgreSQL database for attendance records
 - Web-based live monitoring dashboard
 
+
+
 ## 📸 Project Screenshots
 
 ### Live ROI Detection
