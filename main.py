@@ -1,11 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import psycopg2
-from fastapi.responses import HTMLResponse
+from datetime import datetime
 
-# -------------------------
-# DATABASE CONFIG
-# -------------------------
+app = FastAPI(title="Employee Presence API")
+
 DB_CONFIG = {
     "host": "localhost",
     "database": "yolo_db",
@@ -16,54 +15,49 @@ DB_CONFIG = {
 def get_connection():
     return psycopg2.connect(**DB_CONFIG)
 
-def init_db():
+@app.post("/employee/entry")
+def employee_entry(data: dict):
+    tracking_id = data["tracking_id"]
+    time = data["time"]
+
     conn = get_connection()
     cur = conn.cursor()
+
+    # INSERT ENTRY ONLY IF NOT ALREADY OPEN
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS events (
-            id SERIAL PRIMARY KEY,
-            time TIMESTAMP,
-            status TEXT
-        );
-    """)
+        INSERT INTO events (tracking_id, entry_time, status)
+        VALUES (%s, %s, 'ENTRY')
+    """, (tracking_id, time))
+
     conn.commit()
     cur.close()
     conn.close()
 
-def save_event(status, time):
+    return {"message": "ENTRY saved"}
+
+@app.post("/employee/exit")
+def employee_exit(data: dict):
+    tracking_id = data["tracking_id"]
+    time = data["time"]
+
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute(
-        "INSERT INTO events (time, status) VALUES (%s, %s)",
-        (time, status)
-    )
+
+    # UPDATE LAST OPEN ENTRY
+    cur.execute("""
+        UPDATE events
+        SET exit_time = %s,
+            status = 'EXIT'
+        WHERE id = (
+            SELECT id FROM events
+            WHERE tracking_id = %s AND status = 'ENTRY'
+            ORDER BY entry_time DESC
+            LIMIT 1
+        )
+    """, (time, tracking_id))
+
     conn.commit()
     cur.close()
     conn.close()
 
-# -------------------------
-# FASTAPI APP
-# -------------------------
-app = FastAPI(title="Employee Presence API")
-
-@app.on_event("startup")
-def startup_event():
-    init_db()
-
-class Event(BaseModel):
-    status: str
-    time: str
-
-@app.get("/")
-def root():
-    return {"message": "Employee Presence API is running"}
-
-@app.post("/employee")
-def employee_event(event: Event):
-    save_event(event.status, event.time)
-    return {"message": "Employee event saved to PostgreSQL"}
-
-@app.get("/stream", response_class=HTMLResponse)
-def stream_page():
-    with open("templates/stream.html", "r") as f:
-        return f.read()
+    return {"message": "EXIT saved"}
