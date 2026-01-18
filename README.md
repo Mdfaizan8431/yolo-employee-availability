@@ -94,23 +94,11 @@ This project is suitable for:
 #RTSP → Web Page → Phone / Browser
 ---
 
-## 🔁 Complete Pipeline
-Camera
-↓
-RTSP Stream
-↓
-YOLO Person Detection
-↓
-ROI Check
-↓
-Availability Logic (5 min rule)
-↓
-RTSP Annotated Output
-↓
-Web Page / Mobile
+## 🏗️ System Architecture
 
+Camera → RTSP → YOLOv8 → ROI Logic → ENTRY/EXIT  
+→ FastAPI → PostgreSQL → Web Dashboard
 
----
 
 ## 🚀 How to Run the Project
 
@@ -156,22 +144,23 @@ Example:
 
 http://192.168.0.148:8001
 
+## ✨ Features
 
-🧠 Technologies Used
+- Real-time person detection using YOLOv8
+- Employee detection using fixed ROI
+- Accurate ENTRY and EXIT tracking using tracking ID
+- 5-minute absence detection with alert
+- RTSP-based live video streaming
+- FastAPI backend for event logging
+- PostgreSQL database for attendance records
+- Web-based live monitoring dashboard
 
-Python
+## 📸 Project Screenshots
 
-YOLOv8
+### Live ROI Detection
+![ROI Detection](assets/screenshot1.png)
 
-OpenCV
+### Web Dashboard
+![Web Stream](assets/screenshot2.png)
 
-FastAPI
-
-PostgreSQL
-
-FFmpeg
-
-MediaMTX
-
-RTSP Streaming
 
