@@ -111,7 +111,7 @@ Camera → RTSP → YOLOv8 → ROI Logic → ENTRY/EXIT
 
 ---
 
-### 1️⃣ Install Dependencies
+1️⃣ Install Dependencies
 
 ```bash
 pip install -r requirements.txt
@@ -156,13 +156,5 @@ http://192.168.0.148:8001
 - Web-based live monitoring dashboard
 
 
-
-## 📸 Project Screenshots
-
-### Live ROI Detection
-![ROI Detection](assets/screenshot1.png)
-
-### Web Dashboard
-![Web Stream](assets/screenshot2.png)
 
 
