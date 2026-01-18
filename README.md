@@ -109,11 +109,10 @@ Camera → RTSP → YOLOv8 → ROI Logic → ENTRY/EXIT
 - MediaMTX
 - Ubuntu / Linux (recommended)
 
----
+
 
 1️⃣ Install Dependencies
 
-```bash
 pip install -r requirements.txt
 
 2️⃣ Start RTSP Streaming
