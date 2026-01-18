@@ -16,6 +16,13 @@ This project is suitable for:
 - Internship / Fresher-level projects
 
 ---
+# YOLO Employee Availability Monitoring System 🚀
+
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![YOLOv8](https://img.shields.io/badge/YOLOv8-Computer%20Vision-green)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-success)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-blue)
+![RTSP](https://img.shields.io/badge/RTSP-Live%20Streaming-orange)
 
 ## 🎯 What This Project Does
 
