@@ -139,45 +139,61 @@ while True:
 
     current_time = time.time()
 
+        # =========================
+    # ENTRY + EXIT LOGIC (FIXED)
     # =========================
-    # ENTRY LOGIC
-    # =========================
-    if inside_roi and track_id not in active_ids:
+    current_ids_in_roi = set()
+
+    for r in results:
+        if r.boxes.id is None:
+            continue
+
+        boxes = r.boxes.xyxy.cpu().numpy()
+        ids = r.boxes.id.cpu().numpy().astype(int)
+        classes = r.boxes.cls.cpu().numpy().astype(int)
+
+        for box, track_id, cls_id in zip(boxes, ids, classes):
+            if model.names[cls_id] != "person":
+                continue
+
+            x1, y1, x2, y2 = map(int, box)
+            cx = (x1 + x2) // 2
+            cy = (y1 + y2) // 2
+
+            inside_roi = ROI_X1 < cx < ROI_X2 and ROI_Y1 < cy < ROI_Y2
+
+            if inside_roi:
+                current_ids_in_roi.add(track_id)
+
+    # ENTRY
+    new_entries = current_ids_in_roi - active_ids
+    for track_id in new_entries:
         print(f"🟢 ENTRY: ID {track_id}")
         active_ids.add(track_id)
 
-        requests.post(
-            "http://127.0.0.1:8000/employee/entry",
-            json={
-                "tracking_id": int(track_id),
-                "time": str(datetime.now())
-            },
-            timeout=0.5
-        )
+        try:
+            requests.post(
+                API_ENTRY_URL,
+                json={"tracking_id": int(track_id), "time": str(datetime.now())},
+                timeout=0.5
+            )
+        except:
+            pass
 
-
-
-
-    # =========================
-    # EXIT LOGIC
-    # =========================
-    if not inside_roi and track_id in active_ids:
+    # EXIT
+    exits = active_ids - current_ids_in_roi
+    for track_id in exits:
         print(f"🔴 EXIT: ID {track_id}")
         active_ids.remove(track_id)
 
-        requests.post(
-            "http://127.0.0.1:8000/employee/exit",
-            json={
-                "tracking_id": int(track_id),
-                "time": str(datetime.now())
-            },
-            timeout=0.5
-        )
-
-
-
-
-
+        try:
+            requests.post(
+                API_EXIT_URL,
+                json={"tracking_id": int(track_id), "time": str(datetime.now())},
+                timeout=0.5
+            )
+        except:
+            pass
     # =========================
     # 5-MINUTE EMPTY ROI ALERT
     # =========================

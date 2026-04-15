@@ -5,37 +5,43 @@ import os
 
 processes = []
 
+HOME = os.path.expanduser("~")
+PROJECT_DIR = os.path.join(HOME, "Desktop/yolo-employee-availability")
+
 def start_process(cmd, name):
     print(f"🚀 Starting {name}...")
     p = subprocess.Popen(cmd, shell=True)
     processes.append(p)
-    time.sleep(2)
+    time.sleep(3)
 
 try:
-    # 1. Start MediaMTX
-    start_process("~/mediamtx ~/mediamtx.yml", "MediaMTX (RTSP server)")
-
-    # 2. Start FFmpeg (video → RTSP)
+    # 1. MediaMTX
     start_process(
-        "cd ~/Desktop/yolo_project && ./video_to_rtsp.sh",
+        f"chmod +x {PROJECT_DIR}/mediamtx && {PROJECT_DIR}/mediamtx {PROJECT_DIR}/mediamtx.yml",
+        "MediaMTX (RTSP server)"
+    )
+
+    # 2. FFmpeg
+    start_process(
+        f"cd {PROJECT_DIR} && chmod +x video_to_rtsp.sh && ./video_to_rtsp.sh",
         "FFmpeg (Video → RTSP)"
     )
 
-    # 3. Web video stream (FIXED)
+    # 3. WebApp
     start_process(
-        "cd ~/Desktop/yolo_project && uvicorn webapp:app --host 0.0.0.0 --port 8001",
+        f"cd {PROJECT_DIR} && python -m uvicorn webapp:app --host 0.0.0.0 --port 8001",
         "WebApp"
     )
 
-    # 4. FastAPI backend (FIXED)
+    # 4. FastAPI
     start_process(
-        "cd ~/Desktop/yolo_project && uvicorn main:app --host 0.0.0.0 --port 8000",
+        f"cd {PROJECT_DIR} && python -m uvicorn main:app --host 0.0.0.0 --port 8000",
         "FastAPI"
     )
 
-    # 5. YOLO + ROI
+    # 5. YOLO
     start_process(
-        "cd ~/Desktop/yolo_project && python yolo_rtsp_roi.py",
+        f"cd {PROJECT_DIR} && python yolo_rtsp_roi.py",
         "YOLO + RTSP + ROI"
     )
 

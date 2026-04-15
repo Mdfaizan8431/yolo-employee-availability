@@ -7,9 +7,10 @@ app = FastAPI(title="Employee Presence API")
 
 DB_CONFIG = {
     "host": "localhost",
-    "database": "yolo_db",
     "user": "yolo_user",
-    "password": "yolo123"
+    "password": "1234",
+    "dbname": "yolo_db",   # ✅ updated
+    "port": 5432    
 }
 
 def get_connection():
